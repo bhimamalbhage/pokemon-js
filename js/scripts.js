@@ -7,12 +7,11 @@ let pokemonRepository = (function () {
   
     function add(pokemon) {
       if (typeof pokemon === 'object') {
-        let requiredKeys = ['name', 'height', 'types'];
-        let pokemonKeys = Object.keys(pokemon);
-  
-        let hasAllKeys = requiredKeys.every(key => pokemonKeys.includes(key));
-  
-        if (hasAllKeys) {
+        if (
+            'name' in pokemon &&
+            'height' in pokemon &&
+            'types' in pokemon
+        ) {
           pokemonList.push(pokemon);
         } else {
           console.error("Invalid Pokemon object. It must contain 'name', 'height', and 'types'.");
@@ -29,28 +28,39 @@ let pokemonRepository = (function () {
     function findByName(name) {
       return pokemonList.filter(pokemon => pokemon.name.toLowerCase() === name.toLowerCase());
     }
+
+    function addListItem(pokemon) {
+        let pokemon_list = document.querySelector('.pokemon-list');
+        let pokemon_li = document.createElement('li');
+        let button = document.createElement('button');
+        button.innerText = pokemon.name;
+        button.classList.add('button');
+        button.addEventListener('click', function () {
+            showDetails(pokemon);
+        });
+        pokemon_li.appendChild(button);
+        pokemon_list.appendChild(pokemon_li);
+    }
+    
+    function showDetails(pokemon) {
+        console.log(pokemon.name);
+    }
   
     return {
       add: add,
       getAll: getAll,
       findByName: findByName,
+      addListItem: addListItem
     };
   })();
 
   pokemonRepository.add({ name: "Pikachu", height: "0.4", types: ["electric"] });
-
-  //   Trying to add an invalid Pokemon
-  pokemonRepository.add("Just a string");
-  
-  let pokemons = pokemonRepository.getAll();
-  pokemons.forEach((pokemon) => {
-    let message = pokemon.height >= 0.7 ? " | Wow, that’s big!" : "";
-    document.write(
-      "<p>" + pokemon.name + " | height: " + pokemon.height + message + "</p>"
-    );
-  });
   
   // Searching for a Pokemon by name
   let foundPokemon = pokemonRepository.findByName("Bulbasaur");
   console.log(foundPokemon);
+
+  pokemonRepository.getAll().forEach(function (pokemon) { 
+    pokemonRepository.addListItem(pokemon);
+});
   
